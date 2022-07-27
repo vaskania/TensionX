@@ -11,6 +11,8 @@ export class User {
   })
   email: string;
   @Column()
+  role: string;
+  @Column()
   password: string;
   @Column()
   salt: string;

@@ -23,4 +23,8 @@ export class UserCreateDTO {
   @MinLength(8)
   @MaxLength(16)
   readonly confirmPassword: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly role: string;
 }

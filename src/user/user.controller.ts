@@ -1,39 +1,43 @@
-import { Body, Controller, HttpException, HttpStatus, Logger, Post, Request } from "@nestjs/common";
+import { Body, Controller, HttpException, HttpStatus, Logger, Post, Request, UseGuards } from "@nestjs/common";
 import { UserCreateDTO } from "./dto/create-user.dto";
 import { UserLoginDTO } from "./dto/user-login.dto";
 import { UserService } from "./user.service";
-import { UserAlreadyExists } from "./constants/user.constant";
+import { AuthService } from "../auth/auth.service";
+import { LocalAuthGuard } from "../auth/guards/local-auth.guard";
 
 @Controller()
 export class UserController {
   private readonly log = new Logger();
 
   constructor(
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly authService: AuthService
   ) {
   }
 
   @Post("/sign-up")
   async createUser(@Body() user: UserCreateDTO): Promise<{ message: string }> {
     try {
-      await this.userService.createUser(user);
+      const newUser = await this.userService.createUser(user);
       return {
-        message: ` created successfully`
+        message: `${newUser.email} created successfully`
       };
     } catch (error) {
-      this.log.error(UserAlreadyExists);
-      throw new HttpException(UserAlreadyExists, HttpStatus.BAD_REQUEST);
-
+      this.log.error(error.message);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
+  @UseGuards(LocalAuthGuard)
   @Post("/login")
-  async loginUser(@Body() login: UserLoginDTO): Promise<{ access_token: string }> {
-    try {
-      return { access_token: "token" };
-    } catch (error) {
-      this.log.error(error);
-      throw error;
-    }
+  async loginUser(@Request() req) {
+    return req.user;
+    //   try {
+    //     await this.authService.login(user);
+    //     return { access_token: "token" };
+    //   } catch (error) {
+    //     this.log.error(error);
+    //     throw error;
+    //   }
   }
 }

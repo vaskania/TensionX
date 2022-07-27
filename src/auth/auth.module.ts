@@ -5,10 +5,12 @@ import { AuthService } from "./auth.service";
 import { LocalStrategy } from "./strategy/local.strategy";
 import { JwtModule } from "@nestjs/jwt";
 import { JwtStrategy } from "./strategy/jwt.strategy";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { User } from "../typeorm";
 
 @Module({
   imports: [
-    // DbModule,
+    TypeOrmModule.forFeature([User]),
     CryptoModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,

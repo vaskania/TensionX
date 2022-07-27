@@ -2,11 +2,14 @@ import { Injectable } from "@nestjs/common";
 // import { UserRepository } from "../db/repository/user.repository";
 import { HashPassword } from "../utils/crypto";
 import { JwtService } from "@nestjs/jwt";
+import { InjectRepository } from "@nestjs/typeorm";
+import { User as UserEntity } from "../typeorm";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class AuthService {
   constructor(
-    // private userRepo: UserRepository,
+    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
     private readonly hashPassword: HashPassword,
     private readonly jwtService: JwtService
   ) {
@@ -16,26 +19,26 @@ export class AuthService {
     username: string,
     pass: string
   ): Promise<{ username: string; _id: string; role: string } | null | any> {
-    // const user = await this.userRepo.findUser(username);
-    // if (!user) {
-    //   return null;
-    // }
-    //
-    // const userMatch = await this.hashPassword.hashPassword(pass, user.salt);
-    //
-    // if (userMatch.hash === user.password) {
-    //   return { username: user.username, _id: user._id, role: user.role };
-    // }
-    // return null;
-  }
+    const user = await this.userRepository.findOne({
+      where: {
+        email: username
+      }
+    });
+    if (!user) {
+      return null;
+    }
 
-  async login(user: {
-    username: string;
-    role: string;
-  }): Promise<{ access_token: string }> {
-    const payload = { username: user.username, role: user.role };
-    return {
-      access_token: this.jwtService.sign(payload)
-    };
+
+    const userMatch = await this.hashPassword.hashPassword(pass, user.salt);
+    if (userMatch.hash === user.password) {
+      console.log(userMatch);
+      return {
+        access_token: this.jwtService.sign({
+          email: user.email,
+          role: user.role
+        }, { secret: process.env.JWT_SECRET })
+      };
+    }
+    return null;
   }
 }

@@ -4,6 +4,9 @@ import { HashPassword } from "../utils/crypto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User as UserEntity } from "../typeorm";
 import { Repository } from "typeorm";
+import { PasswordNotMatched, UserAlreadyExists } from "./constants/user.constant";
+import { IUserCreated } from "./interfaces";
+import { UserLoginDTO } from "./dto/user-login.dto";
 
 @Injectable()
 export class UserService {
@@ -13,13 +16,21 @@ export class UserService {
   ) {
   }
 
-  async createUser(user: UserCreateDTO): Promise<any> {
-    const findExistUser = await this.userRepository.findOne({
+  async getUser(email) {
+    const user = this.userRepository.findOne({
       where: {
-        email: user.email
+        email
       }
     });
-    if (findExistUser) throw  new Error();
+    return user;
+  }
+
+  async createUser(user: UserCreateDTO): Promise<IUserCreated> {
+    if (user.password !== user.confirmPassword) {
+      throw new Error(PasswordNotMatched);
+    }
+    const findExistUser = await this.getUser(user.email);
+    if (findExistUser) throw  new Error(UserAlreadyExists);
     if (!findExistUser) {
       const { hash, salt } = await this.hashPassword.hashPassword(
         user.password
@@ -29,4 +40,5 @@ export class UserService {
       return this.userRepository.save(newUser);
     }
   }
+
 }

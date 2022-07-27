@@ -32,12 +32,5 @@ export class UserController {
   @Post("/login")
   async loginUser(@Request() req) {
     return req.user;
-    //   try {
-    //     await this.authService.login(user);
-    //     return { access_token: "token" };
-    //   } catch (error) {
-    //     this.log.error(error);
-    //     throw error;
-    //   }
   }
 }

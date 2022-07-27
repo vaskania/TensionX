@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-// import { UserRepository } from "../db/repository/user.repository";
 import { HashPassword } from "../utils/crypto";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -31,7 +30,6 @@ export class AuthService {
 
     const userMatch = await this.hashPassword.hashPassword(pass, user.salt);
     if (userMatch.hash === user.password) {
-      console.log(userMatch);
       return {
         access_token: this.jwtService.sign({
           email: user.email,

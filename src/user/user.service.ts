@@ -6,7 +6,6 @@ import { User as UserEntity } from "../typeorm";
 import { Repository } from "typeorm";
 import { PasswordNotMatched, UserAlreadyExists } from "./constants/user.constant";
 import { IUserCreated } from "./interfaces";
-import { UserLoginDTO } from "./dto/user-login.dto";
 
 @Injectable()
 export class UserService {

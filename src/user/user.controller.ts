@@ -1,8 +1,6 @@
 import { Body, Controller, HttpException, HttpStatus, Logger, Post, Request, UseGuards } from "@nestjs/common";
 import { UserCreateDTO } from "./dto/create-user.dto";
-import { UserLoginDTO } from "./dto/user-login.dto";
 import { UserService } from "./user.service";
-import { AuthService } from "../auth/auth.service";
 import { LocalAuthGuard } from "../auth/guards/local-auth.guard";
 
 @Controller()
@@ -10,8 +8,7 @@ export class UserController {
   private readonly log = new Logger();
 
   constructor(
-    private readonly userService: UserService,
-    private readonly authService: AuthService
+    private readonly userService: UserService
   ) {
   }
 

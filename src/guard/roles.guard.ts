@@ -1,6 +1,5 @@
 import { CanActivate, HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { ExecutionContext } from "@nestjs/common";
-import { Observable } from "rxjs";
 import { Reflector } from "@nestjs/core";
 
 @Injectable()

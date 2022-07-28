@@ -1,7 +1,10 @@
-import { Body, Controller, HttpException, HttpStatus, Logger, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post, Request, UseGuards } from "@nestjs/common";
 import { UserCreateDTO } from "./dto/create-user.dto";
 import { UserService } from "./user.service";
 import { LocalAuthGuard } from "../auth/guards/local-auth.guard";
+import { Roles } from "../decorator/role.decorator";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { RolesGuard } from "../guard/roles.guard";
 
 @Controller()
 export class UserController {
@@ -29,5 +32,33 @@ export class UserController {
   @Post("/login")
   async loginUser(@Request() req) {
     return req.user;
+  }
+
+  @Roles("guest", "user", "supervisor", "admin")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get("/guest")
+  async getGuest() {
+    return { message: "This is a guest tab" };
+  }
+
+  @Roles("user", "supervisor", "admin")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get("/user")
+  async getUser() {
+    return { message: "This is a user tab" };
+  }
+
+  @Roles("supervisor", "admin")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get("/supervisor")
+  async getSupervisor() {
+    return { message: "This is a supervisor tab" };
+  }
+
+  @Roles("admin")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get("/admin")
+  async getAdmin() {
+    return { message: "This is a admin tab" };
   }
 }

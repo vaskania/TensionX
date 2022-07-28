@@ -3,9 +3,11 @@ import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserModule } from "./user/user.module";
 import entities from "./typeorm";
+import { EventsModule } from "./events/events.module";
 
 @Module({
   imports: [
+    EventsModule,
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: "mysql",

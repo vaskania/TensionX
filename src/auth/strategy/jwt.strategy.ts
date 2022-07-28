@@ -13,9 +13,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: { role: string }) {
-    if (payload.role !== "admin") {
-      throw new UnauthorizedException();
-    }
-    return true;
+    return payload;
   }
 }
